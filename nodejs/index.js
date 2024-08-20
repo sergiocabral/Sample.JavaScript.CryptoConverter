@@ -104,7 +104,13 @@ async function calcularResultado() {
   const razao = cotacaoDaMoedaDeEntradaParaBtc / cotacaoDaMoedaDeSaidaParaBtc
   const valorDeSaida = valorDeEntrada * razao
 
-  console.info(`RESULTADO: ${valorDeEntrada} ${moedaDeEntrada} -> ${valorDeSaida} ${moedaDeSaida}`)
+  const calcularCasasDecimais = moeda => moeda.includes('USD') || moeda.includes('BRL') ? 2 : 8
+  const casasDecimais = {
+    valorDeEntrada: calcularCasasDecimais(moedaDeEntrada),
+    valorDeSaida: calcularCasasDecimais(moedaDeSaida),
+  }
+
+  console.info(`RESULTADO: ${valorDeEntrada.toFixed(casasDecimais.valorDeEntrada)} ${moedaDeEntrada} -> ${valorDeSaida.toFixed(casasDecimais.valorDeSaida)} ${moedaDeSaida}`)
 }
 
 async function executarPrograma() {
