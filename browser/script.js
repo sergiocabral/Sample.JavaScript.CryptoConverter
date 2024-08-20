@@ -53,7 +53,33 @@ async function receberCotacaoDasMoedas() {
   ]
 }
 
-async function calcularResultado() {
+function preencherCampoDeMoeda(select, moedas) {
+  const valorOriginal = select.value
+  select.innerHTML = ""
+  moedas.forEach(moeda => {
+    const option = document.createElement('option');
+    option.value = moeda;
+    option.textContent = moeda;
+    select.appendChild(option);
+  });
+  select.value = valorOriginal
+}
+
+function preencherCamposDasMoedas() {
+  let moedas = dadosDeConversao.cotacoes
+    .map(cotacao => cotacao.moeda)
+    .filter(moeda => moeda.trim())
+  moedas.push('BTC')
+
+  moedas = moedas
+    .filter((moeda, index) => moedas.indexOf(moeda) === index)
+    .sort()
+
+  preencherCampoDeMoeda(document.querySelector('.campo.entrada .moeda'), moedas)
+  preencherCampoDeMoeda(document.querySelector('.campo.saida .moeda'), moedas)
+}
+
+function calcularResultado() {
   const valorDeEntrada = parseFloat(dadosDeConversao.entrada.valor)
   const moedaDeEntrada = (dadosDeConversao.entrada.moeda || "BTC").toUpperCase()
   const moedaDeSaida = (dadosDeConversao.saida.moeda || "USDT").toUpperCase()
@@ -62,8 +88,6 @@ async function calcularResultado() {
     console.error(`ERRO: Valor de entrada precisa ser numérico`)
     return
   }
-
-  await receberCotacaoDasMoedas()
 
   const cotacaoDaMoedaDeEntradaParaBtc = moedaDeEntrada === "BTC" ? 1 : dadosDeConversao.cotacoes.find(cotacao => cotacao.moeda === moedaDeEntrada)?.valor
   if (cotacaoDaMoedaDeEntradaParaBtc === undefined) {
@@ -86,18 +110,15 @@ async function calcularResultado() {
     valorDeSaida: calcularCasasDecimais(moedaDeSaida),
   }
 
-  console.info(`RESULTADO: ${valorDeEntrada.toFixed(casasDecimais.valorDeEntrada)} ${moedaDeEntrada} -> ${valorDeSaida.toFixed(casasDecimais.valorDeSaida)} ${moedaDeSaida}`)
+  document.querySelector('.campo.entrada .valor').value = valorDeEntrada.toFixed(casasDecimais.valorDeEntrada)
+  document.querySelector('.campo.saida .valor').value = valorDeSaida.toFixed(casasDecimais.valorDeSaida)
 }
 
 async function executarPrograma() {
-  console.info(`CONVERSOR DE MOEDAS`)
-  console.info(`^^^^^^^^^^^^^^^^^^^`)
-
   receberParametrosDoUsuario()
-  await calcularResultado()
-
-  console.info(`_______________`)
-  console.info(`FIM DO PROGRAMA`)
+  await receberCotacaoDasMoedas()
+  preencherCamposDasMoedas()
+  calcularResultado()
 }
 
 executarPrograma()
