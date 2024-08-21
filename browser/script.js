@@ -1,26 +1,3 @@
-async function perguntar(pergunta) {
-  const readline = require('readline')
-  const process = require('process')
-
-  const parametrosDaInterface = {
-    input: process.stdin,
-    output: process.stdout,
-  }
-
-  const interfaceComUsuario = readline.createInterface(parametrosDaInterface)
-
-  return new Promise(function(retornar) {
-    interfaceComUsuario.question(
-      pergunta,
-      function(resposta) {
-        retornar(resposta)
-
-        interfaceComUsuario.close()
-      }
-    )
-  })
-}
-
 const dadosDeConversao = {
   cotacoes: [],
   entrada: {
@@ -32,10 +9,10 @@ const dadosDeConversao = {
   }
 }
 
-async function receberParametrosDoUsuario() {
-  dadosDeConversao.entrada.valor = await perguntar(`Qual o valor? `)
-  dadosDeConversao.entrada.moeda = await perguntar(`Qual a moeda do valor informado? `)
-  dadosDeConversao.saida.moeda = await perguntar(`Qual a moeda para conversão do valor? `)
+function receberParametrosDoUsuario() {
+  dadosDeConversao.entrada.valor = document.querySelector('.campo.entrada .valor').value
+  dadosDeConversao.entrada.moeda = document.querySelector('.campo.entrada .moeda').value
+  dadosDeConversao.saida.moeda = document.querySelector('.campo.saida .moeda').value
 }
 
 async function carregarDadosDeConversaoDeMoedas() {
@@ -117,7 +94,7 @@ async function executarPrograma() {
   console.info(`CONVERSOR DE MOEDAS`)
   console.info(`^^^^^^^^^^^^^^^^^^^`)
 
-  await receberParametrosDoUsuario()
+  receberParametrosDoUsuario()
   await calcularResultado()
 
   console.info(`_______________`)
