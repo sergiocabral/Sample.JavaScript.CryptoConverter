@@ -27,6 +27,10 @@ async function carregarDadosDeConversaoDeMoedas() {
 }
 
 async function receberCotacaoDasMoedas() {
+  if (dadosDeConversao.cotacoes.length > 0) {
+    return
+  }
+
   const moedas = await carregarDadosDeConversaoDeMoedas()
 
   const paraBtc = moedas
