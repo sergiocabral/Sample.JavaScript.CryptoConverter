@@ -22,6 +22,7 @@ async function perguntar(pergunta) {
 }
 
 const dadosDeConversao = {
+  cotacoes: [],
   entrada: {
     valor: undefined,
     moeda: undefined,
@@ -53,12 +54,35 @@ async function carregarDadosDeConversaoDeMoedas() {
   }
 }
 
+async function receberCotacaoDasMoedas() {
+  const moedas = await carregarDadosDeConversaoDeMoedas()
+
+  const paraBtc = moedas
+    .filter(cotacao => cotacao.symbol.endsWith("BTC"))
+    .map(cotacao => ({
+      moeda: cotacao.symbol.substring(0, cotacao.symbol.indexOf("BTC")),
+      valor: parseFloat(cotacao.lastPrice)
+    }))
+
+  const deBtc = moedas
+    .filter(cotacao => cotacao.symbol.startsWith("BTC"))
+    .map(cotacao => ({
+      moeda: cotacao.symbol.substring(3),
+      valor: 1 / parseFloat(cotacao.lastPrice)
+    }))
+
+  dadosDeConversao.cotacoes = [
+    ...paraBtc,
+    ...deBtc
+  ]
+}
+
 async function executarPrograma() {
   console.info(`CONVERSOR DE MOEDAS`)
   console.info(`^^^^^^^^^^^^^^^^^^^`)
 
   await receberParametrosDoUsuario()
-  await carregarDadosDeConversaoDeMoedas()
+  await receberCotacaoDasMoedas()
 
   console.info(`_______________`)
   console.info(`FIM DO PROGRAMA`)
